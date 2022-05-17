@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 
 volumes:
   prometheus-data:
@@ -31,9 +31,12 @@ services:
   node_exporter:
     image: quay.io/prometheus/node-exporter:latest
     container_name: node_exporter
-    command:
-      - '--path.rootfs=/host'
-    pid: host
-    restart: unless-stopped
+    ports:
+      - "9100:9100"
+
+  blackbox:
+    image: prom/blackbox-exporter:latest
     volumes:
-      - '/:/host:ro,rslave'
+      - ./blackbox.yml:/etc/blackbox_exporter/config.yml
+    ports:
+      - '9115:9115'
