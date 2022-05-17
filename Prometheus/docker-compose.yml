@@ -12,10 +12,12 @@ services:
     container_name: prometheus
     ports:
       - "9090:9090"
+    networks:
+      - hostnetwork
     volumes:
       - /etc/prometheus:/etc/prometheus
       - prometheus-data:/prometheus
-    restart: unless-stopped
+    restart: on-failure
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
 
@@ -24,19 +26,28 @@ services:
     container_name: grafana
     ports:
       - "3000:3000"
+    networks:
+      - hostnetwork
     volumes:
       - grafana-data:/var/lib/grafana
-    restart: unless-stopped
+    restart: on-failure
 
   node_exporter:
     image: quay.io/prometheus/node-exporter:latest
     container_name: node_exporter
     ports:
       - "9100:9100"
+    networks:
+      - hostnetwork
+    restart: on-failure
 
   blackbox:
     image: prom/blackbox-exporter:latest
+    container_name: blackbox
     volumes:
       - ./blackbox.yml:/etc/blackbox_exporter/config.yml
     ports:
       - '9115:9115'
+    networks:
+      - hostnetwork
+    restart: on-failure
