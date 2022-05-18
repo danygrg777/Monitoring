@@ -19,7 +19,7 @@ scrape_configs:
   # Example job for node_exporter
   - job_name: 'node_exporter'
     static_configs:
-       - targets: ['52.4.162.61:9100']
+       - targets: [52.4.162.61:9100]
   
   - job_name: 'blackbox'
     metrics_path: /probe
