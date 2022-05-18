@@ -1,15 +1,44 @@
-scrape_configs:
-  - job_name: 'blackbox'
-    metrics_path: /probe
-    params:
-        module: [http_2xx]
-    static_configs:
-        - targets:
-            - https://qburst.com
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
-      - target_label: __address__
-        replacement: localhost:9115  # The blackbox exporter's real hostname:port.
+odules:
+  http_2xx:
+    prober: http
+  http_post_2xx:
+    prober: http
+    http:
+      method: POST
+  tcp_connect:
+    prober: tcp
+  pop3s_banner:
+    prober: tcp
+    tcp:
+      query_response:
+      - expect: "^+OK"
+      tls: true
+      tls_config:
+        insecure_skip_verify: false
+  grpc:
+    prober: grpc
+    grpc:
+      tls: true
+      preferred_ip_protocol: "ip4"
+  grpc_plain:
+    prober: grpc
+    grpc:
+      tls: false
+      service: "service1"
+  ssh_banner:
+    prober: tcp
+    tcp:
+      query_response:
+      - expect: "^SSH-2.0-"
+      - send: "SSH-2.0-blackbox-ssh-check"
+  irc_banner:
+    prober: tcp
+    tcp:
+      query_response:
+      - send: "NICK prober"
+      - send: "USER prober prober prober :prober"
+      - expect: "PING :([^ ]+)"
+        send: "PONG ${1}"
+      - expect: "^:[^ ]+ 001"
+  icmp:
+    prober: icmp
