@@ -33,6 +33,7 @@ services:
         #- hostnetwork
     volumes:
       - ./grafana-data:/var/lib/grafana
+      - "./grafana.ini:/etc/grafana/grafana.ini"
     restart: on-failure
     depends_on:
       - prometheus
