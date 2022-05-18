@@ -51,3 +51,10 @@ services:
     networks:
       - hostnetwork
     restart: on-failure
+    
+  pagespeed_exporter:
+    image: foomo/pagespeed_exporter:latest
+    container_name: pagespeed_exporter
+    restart: on-failure
+    ports:
+      - "9271:9271"
