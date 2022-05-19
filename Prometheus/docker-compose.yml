@@ -9,17 +9,16 @@ volumes:
 services:
   prometheus:
     image: prom/prometheus:latest
-    user: root
     container_name: prometheus
     ports:
       - "9090:9090"
         #expose:
         #- 9090    
-        #networks:
-        #- hostnetwork
+    networks:
+      - hostnetwork
     volumes:     
       - ./prometheus.yml:/etc/prometheus/prometheus.yml      
-      - ./prometheus-data:/prometheus
+      - prometheus:/prometheus
     restart: on-failure
     #command:
     #- "--config.file=/etc/prometheus/prometheus.yml"
@@ -29,11 +28,12 @@ services:
     container_name: grafana
     ports:
       - "3000:3000"
-        #networks:
-        #- hostnetwork
+    networks:
+      - hostnetwork
     volumes:
-      - ./grafana-data:/var/lib/grafana
-      - "./grafana.ini:/etc/grafana/grafana.ini"
+      - grafana:/var/lib/grafana
+      - ./grafana.ini:/etc/grafana/grafana.ini
+      - ./defaults.ini:/usr/share/grafana/conf/defaults.ini
     restart: on-failure
     depends_on:
       - prometheus
@@ -45,13 +45,13 @@ services:
     container_name: node_exporter
     ports:
       - "9100:9100"
-        #networks:
-        #- hostnetwork
+    networks:
+      - hostnetwork
     restart: on-failure
     depends_on:
       - prometheus
-    links:
-      - "prometheus"
+
+
 
   blackbox:
     image: prom/blackbox-exporter:latest
@@ -60,12 +60,19 @@ services:
       - ./blackbox.yml:/etc/blackbox_exporter/config.yml
     ports:
       - "9115:9115"
-        #networks:
-        #- hostnetwork
+    networks:
+      - hostnetwork
     restart: on-failure
   pagespeed_exporter:
     image: foomo/pagespeed_exporter:latest
     container_name: pagespeed_exporter
     restart: on-failure
+    networks:
+      - hostnetwork
     ports:
       - "9271:9271"
+networks:
+  hostnetwork: 
+volumes:
+  prometheus:
+  grafana:
